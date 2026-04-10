@@ -721,6 +721,7 @@ func _inject_ui():
 
     _sell_btn = Button.new()
     _sell_btn.text = "Sell"
+    _sell_btn.focus_mode = Control.FOCUS_NONE
     _sell_btn.add_theme_font_size_override("font_size", 10)
     _sell_btn.offset_left = 200.0
     _sell_btn.offset_top = 129.0
@@ -731,6 +732,7 @@ func _inject_ui():
 
     _buy_btn = Button.new()
     _buy_btn.text = "Buy"
+    _buy_btn.focus_mode = Control.FOCUS_NONE
     _buy_btn.add_theme_font_size_override("font_size", 10)
     _buy_btn.offset_left = 290.0
     _buy_btn.offset_top = 129.0
