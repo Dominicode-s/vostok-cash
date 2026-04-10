@@ -31,3 +31,33 @@ With MCM installed, find "Cash System" in the mod config menu:
 - **Death Resets Cash** - remove all cash on death (default: on)
 
 Without MCM, settings are saved automatically with defaults.
+
+## For Mod Developers — Signals API
+
+Other mods can hook into cash transactions using signals. Access the Cash System autoload via `Engine.get_meta("CashMain")` — returns `null` if Cash System isn't installed, so it's safe to use as an optional dependency.
+
+```gdscript
+func _ready():
+    await get_tree().create_timer(1.0).timeout
+    var cash = Engine.get_meta("CashMain", null)
+    if !cash:
+        return
+    cash.cash_sold.connect(_on_sold)
+    cash.cash_bought.connect(_on_bought)
+    cash.cash_dropped.connect(_on_dropped)
+
+func _on_sold(amount: int, items: Array):
+    # amount = € earned, items = inventory elements that were sold
+
+func _on_bought(amount: int, items: Array):
+    # amount = € spent, items = supply elements that were bought
+
+func _on_dropped(amount: int):
+    # amount = € value of the dropped stack
+```
+
+| Signal | Args | Description |
+|--------|------|-------------|
+| `cash_sold` | `amount: int, items: Array` | Player sold items at a trader |
+| `cash_bought` | `amount: int, items: Array` | Player bought items from a trader |
+| `cash_dropped` | `amount: int` | Player dropped a cash stack |

@@ -1,5 +1,9 @@
 # Cash System — Changelog
 
+### v2.8.0
+- Added Signals API for mod developers (cash_sold, cash_bought, cash_dropped)
+- Other mods can hook into cash transactions via Engine.get_meta("CashMain")
+
 ### v2.7.1
 - Added null guards on get_node calls to prevent crashes
 - Set focus_mode to NONE on injected buttons
