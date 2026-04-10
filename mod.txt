@@ -1,0 +1,8 @@
+[mod]
+name="Cash System"
+id="cash-system"
+version="2.7.0"
+[autoload]
+CashMain="res://mods/CashSystem/Main.gd"
+[updates]
+modworkshop=55951
