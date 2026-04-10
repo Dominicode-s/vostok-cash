@@ -21,7 +21,10 @@ func ContextPlace():
 			PlayError()
 			return
 
-		var map = get_tree().current_scene.get_node("/root/Map")
+		var map = get_tree().current_scene.get_node_or_null("/root/Map")
+		if !map:
+			PlayError()
+			return
 		var pickup = cash_mod.cash_pickup_scene.instantiate()
 		map.add_child(pickup)
 		pickup.slotData.Update(contextItem.slotData)
@@ -39,7 +42,10 @@ func ContextPlace():
 	super.ContextPlace()
 
 func _drop_cash_item(target, scene: PackedScene):
-	var map = get_tree().current_scene.get_node("/root/Map")
+	var map = get_tree().current_scene.get_node_or_null("/root/Map")
+	if !map:
+		PlayError()
+		return
 
 	var dir: Vector3
 	var pos: Vector3
