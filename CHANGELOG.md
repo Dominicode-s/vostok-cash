@@ -1,5 +1,9 @@
 # Cash System — Changelog
 
+### v2.7.1
+- Added null guards on get_node calls to prevent crashes
+- Set focus_mode to NONE on injected buttons
+
 ### v2.5.0
 - Euro Cash now spawns naturally in civilian and industrial loot containers (1–200€ per stack, Common rarity)
 - Fixed stale icon cache — icon is now rebuilt fresh every launch, old CashIcon.tres auto-deleted
