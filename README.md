@@ -32,7 +32,7 @@ With MCM installed, find "Cash System" in the mod config menu:
 
 Without MCM, settings are saved automatically with defaults.
 
-## For Mod Developers — Signals API
+## For Mod Developers - Signals API
 
 Other mods can hook into cash transactions using signals. Access the Cash System autoload via `Engine.get_meta("CashMain")` — returns `null` if Cash System isn't installed, so it's safe to use as an optional dependency.
 
