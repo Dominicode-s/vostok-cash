@@ -589,6 +589,10 @@ func _get_interface():
 # ─── Trade UI ───
 
 func _cleanup_trade_ui():
+    if _sell_btn and is_instance_valid(_sell_btn) and _sell_btn.pressed.is_connected(_on_sell):
+        _sell_btn.pressed.disconnect(_on_sell)
+    if _buy_btn and is_instance_valid(_buy_btn) and _buy_btn.pressed.is_connected(_on_buy):
+        _buy_btn.pressed.disconnect(_on_buy)
     if _wallet_container and is_instance_valid(_wallet_container):
         _wallet_container.queue_free()
     if _deal_panel and is_instance_valid(_deal_panel):
@@ -895,12 +899,18 @@ func _on_mcm_save(config: ConfigFile):
     _apply_mcm_config(config)
     _apply_loot_config()
 
+func _mcm_val(config: ConfigFile, section: String, key: String, fallback):
+    var entry = config.get_value(section, key, null)
+    if entry == null or not entry is Dictionary:
+        return fallback
+    return entry.get("value", fallback)
+
 func _apply_mcm_config(config: ConfigFile):
-    cfg_sell_rate = config.get_value("Float", "cfg_sell_rate")["value"]
-    cfg_death_resets = config.get_value("Bool", "cfg_death_resets")["value"]
-    cfg_loot_enabled = config.get_value("Bool", "cfg_loot_enabled")["value"]
-    cfg_loot_max_amount = config.get_value("Int", "cfg_loot_max_amount")["value"]
-    cfg_loot_rarity = config.get_value("Int", "cfg_loot_rarity")["value"]
+    cfg_sell_rate = _mcm_val(config, "Float", "cfg_sell_rate", cfg_sell_rate)
+    cfg_death_resets = _mcm_val(config, "Bool", "cfg_death_resets", cfg_death_resets)
+    cfg_loot_enabled = _mcm_val(config, "Bool", "cfg_loot_enabled", cfg_loot_enabled)
+    cfg_loot_max_amount = _mcm_val(config, "Int", "cfg_loot_max_amount", cfg_loot_max_amount)
+    cfg_loot_rarity = _mcm_val(config, "Int", "cfg_loot_rarity", cfg_loot_rarity)
 
 # ─── Config (fallback when MCM not installed) ───
 
