@@ -3,6 +3,9 @@
 ### v2.8.0
 - Added Signals API for mod developers (cash_sold, cash_bought, cash_dropped)
 - Other mods can hook into cash transactions via Engine.get_meta("CashMain")
+- Changed all MCM Float sliders to Int — sell rate now shown as percentage (e.g. 80 = 80%)
+- Changed loot rarity from Int slider to Dropdown with labels (Common, Rare, Legendary)
+- Existing MCM settings will reset to defaults on first launch
 
 ### v2.7.2
 - Fixed MCM config crash when config keys are missing or corrupted
