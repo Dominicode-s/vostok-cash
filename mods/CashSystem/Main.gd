@@ -844,11 +844,11 @@ func _try_load_mcm():
 func _register_mcm():
     var _config = ConfigFile.new()
 
-    _config.set_value("Float", "cfg_sell_rate", {
-        "name" = "Sell Rate",
-        "tooltip" = "Fraction of item value received when selling (0.8 = 80%)",
-        "default" = 0.8, "value" = 0.8,
-        "minRange" = 0.1, "maxRange" = 1.0,
+    _config.set_value("Int", "cfg_sell_rate", {
+        "name" = "Sell Rate (%)",
+        "tooltip" = "Percentage of item value received when selling (80 = 80%)",
+        "default" = 80, "value" = 80,
+        "minRange" = 10, "maxRange" = 100,
         "menu_pos" = 1
     })
     _config.set_value("Bool", "cfg_death_resets", {
@@ -870,18 +870,30 @@ func _register_mcm():
         "minRange" = 10, "maxRange" = 1000,
         "menu_pos" = 4
     })
-    _config.set_value("Int", "cfg_loot_rarity", {
+    _config.set_value("Dropdown", "cfg_loot_rarity", {
         "name" = "Loot Rarity",
-        "tooltip" = "Cash rarity tier: 0 = Common (84%), 1 = Rare (13%), 2 = Legendary (2%)",
+        "tooltip" = "Cash spawn rarity tier in loot containers",
         "default" = 0, "value" = 0,
-        "minRange" = 0, "maxRange" = 2,
+        "options" = ["Common (84%)", "Rare (13%)", "Legendary (2%)"],
         "menu_pos" = 5
     })
 
     if !FileAccess.file_exists(MCM_FILE_PATH + "/config.ini"):
-        DirAccess.open("user://").make_dir(MCM_FILE_PATH)
+        DirAccess.open("user://").make_dir_recursive(MCM_FILE_PATH)
         _config.save(MCM_FILE_PATH + "/config.ini")
     else:
+        # Migrate: remove stale sections from older versions
+        var _saved = ConfigFile.new()
+        _saved.load(MCM_FILE_PATH + "/config.ini")
+        var _dirty = false
+        if _saved.has_section("Float"):
+            _saved.erase_section("Float")
+            _dirty = true
+        if _saved.has_section_key("Int", "cfg_loot_rarity"):
+            _saved.erase_section_key("Int", "cfg_loot_rarity")
+            _dirty = true
+        if _dirty:
+            _saved.save(MCM_FILE_PATH + "/config.ini")
         _mcm_helpers.CheckConfigurationHasUpdated(MCM_MOD_ID, _config, MCM_FILE_PATH + "/config.ini")
         _config.load(MCM_FILE_PATH + "/config.ini")
 
@@ -906,11 +918,11 @@ func _mcm_val(config: ConfigFile, section: String, key: String, fallback):
     return entry.get("value", fallback)
 
 func _apply_mcm_config(config: ConfigFile):
-    cfg_sell_rate = _mcm_val(config, "Float", "cfg_sell_rate", cfg_sell_rate)
+    cfg_sell_rate = _mcm_val(config, "Int", "cfg_sell_rate", 80) / 100.0
     cfg_death_resets = _mcm_val(config, "Bool", "cfg_death_resets", cfg_death_resets)
     cfg_loot_enabled = _mcm_val(config, "Bool", "cfg_loot_enabled", cfg_loot_enabled)
     cfg_loot_max_amount = _mcm_val(config, "Int", "cfg_loot_max_amount", cfg_loot_max_amount)
-    cfg_loot_rarity = _mcm_val(config, "Int", "cfg_loot_rarity", cfg_loot_rarity)
+    cfg_loot_rarity = _mcm_val(config, "Dropdown", "cfg_loot_rarity", cfg_loot_rarity)
 
 # ─── Config (fallback when MCM not installed) ───
 
