@@ -1,5 +1,16 @@
 # Cash System — Changelog
 
+### v2.9.0
+- Renamed currency from "Euro Cash" to "Vostok Dollars" to fit the game setting
+- New note texture — custom "Vostok Dollars" banknote artwork replaces the euro note
+- New printed band strap texture with VOSTOK typography, denomination, and serial number
+- Thinner band geometry (25% narrower strap) with cleaner UV mapping on the visible top face
+- Switched cash bundle materials from unshaded to per-pixel PBR so the model now responds to lighting and shadows like the rest of the world
+- Fixed sRGB color space handling for runtime-loaded textures — previously textures were oversaturated because raw sRGB bytes were being sampled as linear
+- Disabled self-shadow casting on the mesh to eliminate dark artifacts on the double-sided geometry
+- Added mipmaps to runtime textures to prevent aliasing on the small in-hand item
+- Old `cash_bundle_euro.jpg` texture removed
+
 ### v2.8.0
 - Added Signals API for mod developers (cash_sold, cash_bought, cash_dropped)
 - Other mods can hook into cash transactions via Engine.get_meta("CashMain")

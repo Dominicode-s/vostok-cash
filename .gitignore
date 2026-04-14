@@ -6,6 +6,13 @@
 .godot/
 *.import
 
+# Blender / OBJ export artifacts
+*.bak
+*.mtl
+
+# Dev tools
+_tools/
+
 # OS
 Thumbs.db
 .DS_Store
