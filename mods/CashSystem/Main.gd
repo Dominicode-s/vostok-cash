@@ -204,7 +204,7 @@ func _init_cash_item():
 
     var item = ItemData.new()
     item.file = CASH_FILE
-    item.name = "Euro Cash"
+    item.name = "Vostok Dollars"
     item.inventory = "Cash"
     item.rotated = "Cash"
     item.equipment = "Cash"
@@ -287,16 +287,36 @@ func _init_cash_pickup():
         if mesh:
             var note_mat = StandardMaterial3D.new()
             note_mat.cull_mode = BaseMaterial3D.CULL_DISABLED
-            note_mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
-            note_mat.albedo_color = Color(0.25, 0.25, 0.27)
-            var tex = _load_mod_image("cash_bundle_euro.jpg")
-            if tex: note_mat.albedo_texture = tex
+            note_mat.shading_mode = BaseMaterial3D.SHADING_MODE_PER_PIXEL
+            note_mat.albedo_color = Color(1, 1, 1)
+            note_mat.roughness = 0.85
+            note_mat.metallic = 0.0
+            var note_path = _mod_file_path("new_note.jpg")
+            if note_path != "":
+                var note_bytes = FileAccess.get_file_as_bytes(note_path)
+                if !note_bytes.is_empty():
+                    var note_img = Image.new()
+                    if note_img.load_jpg_from_buffer(note_bytes) == OK:
+                        note_img.srgb_to_linear()
+                        note_img.generate_mipmaps()
+                        note_mat.albedo_texture = ImageTexture.create_from_image(note_img)
             mesh.surface_set_material(0, note_mat)
             if mesh.get_surface_count() > 1:
                 var band_mat = StandardMaterial3D.new()
                 band_mat.cull_mode = BaseMaterial3D.CULL_DISABLED
-                band_mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
-                band_mat.albedo_color = Color(0.22, 0.16, 0.10)
+                band_mat.shading_mode = BaseMaterial3D.SHADING_MODE_PER_PIXEL
+                band_mat.albedo_color = Color(1, 1, 1)
+                band_mat.roughness = 0.92
+                band_mat.metallic = 0.0
+                var band_path = _mod_file_path("band_strap.jpg")
+                if band_path != "":
+                    var band_bytes = FileAccess.get_file_as_bytes(band_path)
+                    if !band_bytes.is_empty():
+                        var band_img = Image.new()
+                        if band_img.load_jpg_from_buffer(band_bytes) == OK:
+                            band_img.srgb_to_linear()
+                            band_img.generate_mipmaps()
+                            band_mat.albedo_texture = ImageTexture.create_from_image(band_img)
                 mesh.surface_set_material(1, band_mat)
             ResourceSaver.save(mesh, mesh_path, ResourceSaver.FLAG_COMPRESS)
             ResourceLoader.load(mesh_path, "", ResourceLoader.CACHE_MODE_REPLACE)
@@ -351,6 +371,7 @@ func _build_cash_pickup_tscn(custom_mesh: bool = false) -> String:
     lines.append('[node name="Mesh" type="MeshInstance3D" parent="."]')
     lines.append('layers = 4')
     lines.append('visibility_range_end = 25.0')
+    lines.append('cast_shadow = 0')
     if custom_mesh:
         lines.append('mesh = ExtResource("5")')
     else:
@@ -416,7 +437,7 @@ func _parse_obj(path: String) -> ArrayMesh:
         elif line.begins_with("f "):
             var parts = line.split(" ", false)
             for i in range(3, parts.size()):
-                for idx in [1, i - 1, i]:
+                for idx in [1, i, i - 1]:
                     surfs[cur].append(parts[idx])
     file.close()
     var mesh = ArrayMesh.new()
