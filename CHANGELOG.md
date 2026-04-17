@@ -1,5 +1,8 @@
 # Cash System — Changelog
 
+### v2.9.2
+- Trivial: `icon.png` recompressed with max DEFLATE + palette quantization. Saves ~160 bytes, pixel-exact identical. No visual or functional change.
+
 ### v2.9.1
 - Fixed "Death Resets Cash" toggle — cash is now preserved across death when the option is disabled (previously the base game wiped the inventory regardless)
 
