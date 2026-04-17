@@ -47,6 +47,7 @@ var _status_timer: float = 0.0
 var _inv_badge: Label = null
 var _inv_badge_injected: bool = false
 var _was_dead: bool = false
+var _pending_cash_restore: int = -1
 
 # Migration from v1.x virtual wallet
 var _migration_pending: int = -1
@@ -563,9 +564,17 @@ func _process(delta):
         if !_was_dead:
             if cfg_death_resets:
                 call_deferred("RemoveAllCash")
+            else:
+                # Base game wipes inventory on death — snapshot now, restore on respawn.
+                _pending_cash_restore = CountCash()
             _was_dead = true
     else:
         _was_dead = false
+        if _pending_cash_restore > 0:
+            var iface_r = _get_interface()
+            if iface_r and !gameData.isTransitioning:
+                call_deferred("AddCash", _pending_cash_restore)
+                _pending_cash_restore = -1
 
     var iface = _get_interface()
 
