@@ -1,5 +1,8 @@
 # Cash System — Changelog
 
+### v2.9.1
+- Fixed "Death Resets Cash" toggle — cash is now preserved across death when the option is disabled (previously the base game wiped the inventory regardless)
+
 ### v2.9.0
 - Renamed currency from "Euro Cash" to "Vostok Dollars" to fit the game setting
 - New note texture — custom "Vostok Dollars" banknote artwork replaces the euro note
