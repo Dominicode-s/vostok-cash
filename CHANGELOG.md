@@ -1,5 +1,10 @@
 # Cash System — Changelog
 
+### v2.9.3
+- Fixed: crash to desktop on repeated barter trades at the Generalist (and other traders). The vanilla `Interface.Drop()` leaves drop position/direction/rotation uninitialized when a trader is active and the mouse was last over a grid — this fires when a barter overflows the inventory and `AutoPlace` drops the incoming item. Our `Drop` override now forces the safe "drop near trader" branch before forwarding to vanilla.
+- Defensive: trade UI labels (CASH title, divider, wallet amount) now use `MOUSE_FILTER_IGNORE` so they can never swallow clicks aimed at vanilla's Accept/Reset buttons.
+- Defensive: added `is_instance_valid` guard on the wallet label's per-frame text update.
+
 ### v2.9.2
 - Trivial: `icon.png` recompressed with max DEFLATE + palette quantization. Saves ~160 bytes, pixel-exact identical. No visual or functional change.
 
