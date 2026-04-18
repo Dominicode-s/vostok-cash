@@ -10,6 +10,14 @@ func Drop(target):
 		else:
 			PlayError()
 		return
+	# Vanilla Drop() leaves dropDirection/dropPosition/dropRotation uninitialized
+	# when `trader != null and hoverGrid != null`. This path fires during barter
+	# when CompleteDeal → Create → AutoPlace overflows and calls Drop(newItem),
+	# crashing on the next pickup.position assignment. Force the "drop near
+	# trader" branch by nulling hoverGrid for the super call. Hover() restores it
+	# on the next frame.
+	if trader != null and hoverGrid != null:
+		hoverGrid = null
 	super.Drop(target)
 
 # Override ContextPlace to handle Cash without needing a Database.gd override

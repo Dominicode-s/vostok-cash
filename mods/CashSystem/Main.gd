@@ -593,7 +593,7 @@ func _process(delta):
     if gameData.isTrading:
         if !_ui_injected:
             call_deferred("_inject_ui")
-        elif _cash_label:
+        elif _cash_label and is_instance_valid(_cash_label):
             if _status_timer > 0.0:
                 _status_timer -= delta
                 if _status_timer <= 0.0:
@@ -724,6 +724,7 @@ func _inject_ui():
 
     var divider = ColorRect.new()
     divider.color = Color(1, 1, 1, 0.08)
+    divider.mouse_filter = Control.MOUSE_FILTER_IGNORE
     divider.offset_left = 8.0
     divider.offset_top = 126.0
     divider.offset_right = 376.0
@@ -732,6 +733,7 @@ func _inject_ui():
 
     var title = Label.new()
     title.text = "CASH"
+    title.mouse_filter = Control.MOUSE_FILTER_IGNORE
     title.add_theme_font_size_override("font_size", 10)
     title.add_theme_color_override("font_color", Color(1.0, 1.0, 1.0))
     title.offset_left = 10.0
@@ -743,6 +745,7 @@ func _inject_ui():
 
     _cash_label = Label.new()
     _cash_label.text = "€" + str(CountCash())
+    _cash_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
     _cash_label.add_theme_font_size_override("font_size", 11)
     _cash_label.add_theme_color_override("font_color", Color(0.4, 1.0, 0.4))
     _cash_label.offset_left = 58.0
