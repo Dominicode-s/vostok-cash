@@ -1,5 +1,14 @@
 # Cash System — Changelog
 
+### v3.0.0 — MML v3.0.0 compatibility
+
+**Requires Metro Mod Loader v3.0.0 or newer.** Incompatible with earlier MML versions.
+
+- **Migrated Drop / ContextPlace overrides from `take_over_path()` to MML's RTVModLib hook API** (`lib.hook("interface-drop", ...)` / `lib.hook("interface-contextplace", ...)`). Under MML v3.0.0's script-rewrite pipeline, multiple mods calling `take_over_path()` on `res://Scripts/Interface.gd` broke the override chain — the "CHAIN BROKEN" warning in the loader log, symptom: dropping any item (vanilla or cash) silently deleted it. Hook-API replace hooks short-circuit cleanly for cash items and fall through to vanilla for everything else, no chain conflict with Secure Container / XP & Skills.
+- **Removed `mods/CashSystem/Interface.gd`** subclass — all logic moved into `Main.gd` hook callbacks.
+- **Removed `overrideScript()` helper** from `Main.gd`. No functional change for players: cash drop/place, trade wallet, loot pool injection, MCM integration, save persistence all behave identically.
+- Save compat preserved — existing `user://CashData.cfg` loads unchanged.
+
 ### v2.9.2
 - Trivial: `icon.png` recompressed with max DEFLATE + palette quantization. Saves ~160 bytes, pixel-exact identical. No visual or functional change.
 
