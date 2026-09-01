@@ -7,3 +7,6 @@ priority=0
 CashMain="res://mods/CashSystem/Main.gd"
 [updates]
 modworkshop=55951
+
+[dependencies]
+optional=["doinkoink-mcm"]
