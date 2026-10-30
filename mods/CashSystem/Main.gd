@@ -52,8 +52,6 @@ var _pending_cash_restore: int = -1
 # Migration from v1.x virtual wallet
 var _migration_pending: int = -1
 
-# ─── Initialization ───
-
 func _ready():
     Engine.set_meta("CashMain", self)
     _cleanup_stale_cache()
@@ -146,7 +144,7 @@ func overrideScript(path: String):
     script.take_over_path(parent.resource_path)
 
 func _cleanup_stale_cache():
-    # Remove legacy CashIcon.tres — icon is now embedded directly in ItemData
+    # Remove legacy CashIcon.tres; icon is now embedded directly in ItemData
     var stale = "user://CashIcon.tres"
     if FileAccess.file_exists(stale):
         DirAccess.remove_absolute(ProjectSettings.globalize_path(stale))
@@ -154,7 +152,7 @@ func _cleanup_stale_cache():
 func _inject_into_loot_pool():
     var lt = load("res://Loot/LT_Master.tres")
     if !lt:
-        print("[CashSystem] Could not load LT_Master — cash won't spawn in containers")
+        print("[CashSystem] Could not load LT_Master - cash won't spawn in containers")
         return
     for item in lt.items:
         if item and item.file == CASH_FILE:
@@ -186,7 +184,7 @@ func _init_cash_item():
     var item_path = "user://CashItemData.tres"
     var icon_res_path = "user://CashIcon.tres"
 
-    # Always rebuild icon fresh — prevents stale cache after icon updates
+    # Always rebuild icon fresh to avoid a stale cache after icon updates
     var icon = _load_mod_image("icon.png")
     if !icon:
         icon = _make_placeholder_texture()
@@ -220,7 +218,7 @@ func _init_cash_item():
     item.showAmount = true
     item.defaultAmount = 200
     item.maxAmount = 99999
-    # Loot pool defaults — overridden by _apply_loot_config() after MCM loads
+    # Loot pool defaults; overridden by _apply_loot_config() after MCM loads
     item.rarity = item.Rarity.Common
     item.civilian = true
     item.industrial = true
@@ -234,7 +232,6 @@ func _make_placeholder_texture() -> ImageTexture:
     var img = Image.create(128, 128, false, Image.FORMAT_RGBA8)
     # Dark muted base so the white amount text is readable
     img.fill(Color(0.08, 0.14, 0.08))
-    # Subtle thin border
     for x in range(128):
         for y in range(3):
             img.set_pixel(x, y, Color(0.15, 0.25, 0.15))
@@ -280,7 +277,6 @@ func _build_tetris_tscn(icon_path: String) -> String:
 func _init_cash_pickup():
     var pickup_path = "user://CashPickup.tscn"
     var mesh_path = "user://CashBundleMesh.res"
-    # Build custom 3D mesh from OBJ model assets
     var has_custom_mesh = false
     var obj_file = _mod_file_path("cash_bundle.obj")
     if obj_file != "":
@@ -385,8 +381,6 @@ func _build_cash_pickup_tscn(custom_mesh: bool = false) -> String:
     lines.append('')
     return "\n".join(lines)
 
-# ─── Asset Loading Helpers ───
-
 func _mod_file_path(filename: String) -> String:
     var res_path = "res://mods/CashSystem/" + filename
     if FileAccess.file_exists(res_path):
@@ -464,8 +458,6 @@ func _check_migration():
             _migration_pending = cfg.get_value("wallet", "cash", 0)
         DirAccess.remove_absolute(ProjectSettings.globalize_path("user://CashData.cfg"))
 
-# ─── Cash Helpers (physical inventory items) ───
-
 func CountCash() -> int:
     var iface = _get_interface()
     if !iface: return 0
@@ -531,8 +523,6 @@ func RemoveAllCash():
         iface.inventoryGrid.Pick(element)
         element.queue_free()
 
-# ─── Process ───
-
 func _process(delta):
     # Shelter scene change detection (for Cash persistence)
     var scene = get_tree().current_scene
@@ -565,7 +555,7 @@ func _process(delta):
             if cfg_death_resets:
                 call_deferred("RemoveAllCash")
             else:
-                # Base game wipes inventory on death — snapshot now, restore on respawn.
+                # Base game wipes inventory on death; snapshot now, restore on respawn.
                 _pending_cash_restore = CountCash()
             _was_dead = true
     else:
@@ -606,8 +596,6 @@ func _process(delta):
             _cleanup_trade_ui()
         _was_trading = false
 
-# ─── Interface Helpers ───
-
 func _get_interface():
     if _interface and is_instance_valid(_interface):
         return _interface
@@ -615,8 +603,6 @@ func _get_interface():
     if !tree or !tree.current_scene: return null
     _interface = tree.current_scene.get_node_or_null("/root/Map/Core/UI/Interface")
     return _interface
-
-# ─── Trade UI ───
 
 func _cleanup_trade_ui():
     if _sell_btn and is_instance_valid(_sell_btn) and _sell_btn.pressed.is_connected(_on_sell):
@@ -783,8 +769,6 @@ func _inject_ui():
     _ui_injected = true
     _was_trading = true
 
-# ─── Sell / Buy ───
-
 func _on_sell():
     if !_interface: return
 
@@ -793,7 +777,6 @@ func _on_sell():
 
     for element in _interface.inventoryGrid.get_children():
         if element.selected:
-            # Skip cash items — you can't sell money
             if element.slotData.itemData.file == CASH_FILE:
                 continue
             total_value += element.Value()
@@ -867,8 +850,6 @@ func _play_sound():
     if _interface and _trader:
         _trader.PlayTraderTrade()
 
-# ─── MCM Integration ───
-
 func _try_load_mcm():
     if ResourceLoader.exists("res://ModConfigurationMenu/Scripts/Doink Oink/MCM_Helpers.tres"):
         return load("res://ModConfigurationMenu/Scripts/Doink Oink/MCM_Helpers.tres")
@@ -879,26 +860,26 @@ func _register_mcm():
 
     _config.set_value("Int", "cfg_sell_rate", {
         "name" = "Sell Rate (%)",
-        "tooltip" = "Percentage of item value received when selling (80 = 80%)",
+        "tooltip" = "% of item value paid out on sell",
         "default" = 80, "value" = 80,
         "minRange" = 10, "maxRange" = 100,
         "menu_pos" = 1
     })
     _config.set_value("Bool", "cfg_death_resets", {
         "name" = "Death Resets Cash",
-        "tooltip" = "Remove all cash items from inventory on death",
+        "tooltip" = "Wipe cash on death",
         "default" = true, "value" = true,
         "menu_pos" = 2
     })
     _config.set_value("Bool", "cfg_loot_enabled", {
         "name" = "Cash in Loot",
-        "tooltip" = "Cash spawns in civilian and industrial loot containers",
+        "tooltip" = "Spawn cash in civilian/industrial loot",
         "default" = true, "value" = true,
         "menu_pos" = 3
     })
     _config.set_value("Int", "cfg_loot_max_amount", {
         "name" = "Max Loot Amount",
-        "tooltip" = "Maximum cash per loot stack — containers spawn 1 to this value",
+        "tooltip" = "Max cash per loot stack (spawns 1 to this)",
         "default" = 200, "value" = 200,
         "minRange" = 10, "maxRange" = 1000,
         "menu_pos" = 4
@@ -956,8 +937,6 @@ func _apply_mcm_config(config: ConfigFile):
     cfg_loot_enabled = _mcm_val(config, "Bool", "cfg_loot_enabled", cfg_loot_enabled)
     cfg_loot_max_amount = _mcm_val(config, "Int", "cfg_loot_max_amount", cfg_loot_max_amount)
     cfg_loot_rarity = _mcm_val(config, "Dropdown", "cfg_loot_rarity", cfg_loot_rarity)
-
-# ─── Config (fallback when MCM not installed) ───
 
 func SaveConfig():
     var cfg = ConfigFile.new()
